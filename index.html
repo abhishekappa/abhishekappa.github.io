@@ -6,6 +6,7 @@
 <title>Abhishekappa B R — Portfolio</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
@@ -679,7 +680,7 @@ footer span{color:var(--neon)}
           <div class="ir"><span class="ir-key">Location</span>Bangalore 560068, India</div>
           <div class="ir"><span class="ir-key">Email</span>abhishekappa361@gmail.com</div>
           <div class="ir"><span class="ir-key">Phone</span>+91 87226 61138</div>
-          <div class="ir"><span class="ir-key">LinkedIn</span><a href = "https://www.linkedin.com/in/abhishekappa/" style="color:#64748b;">linkedin.com/abhishekappa</a></div>
+          <div class="ir"><span class="ir-key">LinkedIn</span><a href = "https://www.linkedin.com/in/abhishekappa/" style="color:#64748b;"> linkedin.com/abhishekappa </a></div>
           <div class="ir"><span class="ir-key">DOB</span>06 March 1993</div>
           <div class="ir"><span class="ir-key">Status</span>Married · Indian</div>
           <div class="ir"><span class="ir-key">Speaks</span>English · Kannada · Hindi · Tamil</div>
@@ -936,7 +937,7 @@ footer span{color:var(--neon)}
       </div>
       <div class="contact-card">
         <div class="cc-ico">💼</div>
-        <div><div class="cc-lbl">LinkedIn</div><div class="cc-val"><a href = "https://www.linkedin.com/in/abhishekappa/" style="color:#f4f5f7;">linkedin.com/abhishekappa</a></div></div>
+        <div><div class="cc-lbl">LinkedIn</div><div class="cc-val"><a href = "https://www.linkedin.com/in/abhishekappa/" style="color:#f4f5f7;"> linkedin.com/abhishekappa </a></div></div>
       </div>
       <div class="contact-card">
         <div class="cc-ico">📍</div>
@@ -944,21 +945,22 @@ footer span{color:var(--neon)}
       </div>
     </div>
 
-    <div class="form">
+    <form class="form" id="contact-form" novalidate>
       <div class="fg">
-        <label class="fl">Your Name</label>
-        <input type="text" class="fi" placeholder="John Doe">
+        <label class="fl" for="from_name">Your Name</label>
+        <input type="text" id="from_name" name="from_name" class="fi" placeholder="John Doe" required>
       </div>
       <div class="fg">
-        <label class="fl">Email Address</label>
-        <input type="email" class="fi" placeholder="john@example.com">
+        <label class="fl" for="reply_to">Email Address</label>
+        <input type="email" id="reply_to" name="reply_to" class="fi" placeholder="john@example.com" required>
       </div>
       <div class="fg">
-        <label class="fl">Message</label>
-        <textarea class="ft" placeholder="Hello Abhishekappa…"></textarea>
+        <label class="fl" for="message">Message</label>
+        <textarea id="message" name="message" class="ft" placeholder="Hello Abhishekappa…" required></textarea>
       </div>
-      <button class="fsub"><span>Transmit Message →</span></button>
-    </div>
+      <button type="submit" class="fsub" id="submit-btn"><span id="btn-text">Transmit Message →</span></button>
+      <div id="form-status" style="display:none;margin-top:.75rem;font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;padding:.75rem 1rem;border-radius:6px;"></div>
+    </form>
   </div>
 </section>
 
@@ -1091,6 +1093,73 @@ const obs=new IntersectionObserver(entries=>{
   });
 },{threshold:.08});
 rv.forEach(el=>obs.observe(el));
+
+
+// ── EMAILJS ──
+emailjs.init('zK6g2vjSYxsEHt-eh');
+
+const contactForm = document.getElementById('contact-form');
+const submitBtn   = document.getElementById('submit-btn');
+const btnText     = document.getElementById('btn-text');
+const formStatus  = document.getElementById('form-status');
+
+function setStatus(msg, type) {
+  formStatus.style.display = 'block';
+  formStatus.textContent   = msg;
+  if (type === 'success') {
+    formStatus.style.background  = 'rgba(0,255,231,0.07)';
+    formStatus.style.border      = '1px solid rgba(0,255,231,0.35)';
+    formStatus.style.color       = '#00ffe7';
+  } else if (type === 'error') {
+    formStatus.style.background  = 'rgba(255,71,87,0.07)';
+    formStatus.style.border      = '1px solid rgba(255,71,87,0.35)';
+    formStatus.style.color       = '#ff4757';
+  } else {
+    formStatus.style.background  = 'rgba(255,255,255,0.04)';
+    formStatus.style.border      = '1px solid rgba(255,255,255,0.1)';
+    formStatus.style.color       = '#94a3b8';
+  }
+}
+
+contactForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  // Basic validation
+  const name    = document.getElementById('from_name').value.trim();
+  const email   = document.getElementById('reply_to').value.trim();
+  const message = document.getElementById('message').value.trim();
+
+  if (!name) { setStatus('⚠ Please enter your name.', 'error'); return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    setStatus('⚠ Please enter a valid email address.', 'error'); return;
+  }
+  if (!message) { setStatus('⚠ Please enter a message.', 'error'); return; }
+
+  // Loading state
+  submitBtn.disabled = true;
+  btnText.textContent = 'Transmitting…';
+  setStatus('// Sending your message…', 'loading');
+
+  emailjs.sendForm('service_e4dzwln', 'template_jclkanr', contactForm)
+    .then(function() {
+      btnText.textContent = 'Message Sent ✓';
+      submitBtn.style.borderColor = 'rgba(0,255,231,.6)';
+      submitBtn.style.color = 'var(--neon)';
+      setStatus('✓ Message transmitted successfully! Abhishekappa will get back to you soon.', 'success');
+      contactForm.reset();
+      setTimeout(function() {
+        btnText.textContent = 'Transmit Message →';
+        submitBtn.disabled = false;
+        submitBtn.style.borderColor = '';
+        submitBtn.style.color = '';
+      }, 4000);
+    }, function(error) {
+      btnText.textContent = 'Transmit Message →';
+      submitBtn.disabled = false;
+      setStatus('✗ Transmission failed: ' + (error.text || 'Unknown error. Please try again.'), 'error');
+      console.error('EmailJS error:', error);
+    });
+});
 
 // ── ACTIVE NAV ──
 const secs=document.querySelectorAll('section[id]');
