@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projects — Abhishekappa B R</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --void:#03060f;
+  --glass:rgba(255,255,255,0.032);
+  --glass-border:rgba(255,255,255,0.08);
+  --neon:#00ffe7;
+  --neon2:#ff6b35;
+  --neon3:#a78bfa;
+  --star:#e2e8f0;
+  --dim:#64748b;
+  --gold:#f59e0b;
+}
+
+html{scroll-behavior:smooth}
+body{
+  font-family:'Crimson Pro',Georgia,serif;
+  background:var(--void);color:var(--star);
+  overflow-x:hidden;cursor:none;
+  min-height:100vh;
+}
+
+/* ─── CURSOR ─── */
+#cur,#cur2{position:fixed;border-radius:50%;pointer-events:none;z-index:9999;mix-blend-mode:screen}
+#cur{width:8px;height:8px;background:var(--neon);box-shadow:0 0 15px var(--neon),0 0 30px rgba(0,255,231,0.4);transition:transform .08s}
+#cur2{width:28px;height:28px;border:1px solid rgba(0,255,231,0.4);background:transparent;transition:transform .18s,width .2s,height .2s,border-color .2s}
+
+#c{position:fixed;inset:0;z-index:0}
+
+body::before{
+  content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity:.025;
+}
+
+/* ─── NAV ─── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.4rem 5rem;
+  background:rgba(3,6,15,0.6);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid rgba(0,255,231,.06);
+}
+.logo{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1.5rem;letter-spacing:.15em;
+  color:var(--neon);text-shadow:0 0 20px rgba(0,255,231,.5);
+  text-decoration:none;
+}
+.nav-ul{display:flex;gap:2.5rem;list-style:none;align-items:center}
+.nav-ul a{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;
+  text-decoration:none;color:var(--dim);
+  transition:color .25s,text-shadow .25s;
+  position:relative;
+}
+.nav-ul a::after{
+  content:'';position:absolute;bottom:-3px;left:0;right:0;height:1px;
+  background:var(--neon);transform:scaleX(0);transform-origin:left;
+  transition:transform .3s;box-shadow:0 0 8px var(--neon);
+}
+.nav-ul a:hover{color:var(--neon);text-shadow:0 0 12px rgba(0,255,231,.5)}
+.nav-ul a:hover::after{transform:scaleX(1)}
+.nav-active{color:var(--neon)!important;text-shadow:0 0 12px rgba(0,255,231,.5)!important}
+.nav-active::after{transform:scaleX(1)!important}
+.nav-cta{
+  color:var(--neon)!important;
+  border:1px solid rgba(0,255,231,.3)!important;
+  padding:.3rem .85rem!important;border-radius:2px;
+}
+
+/* ─── MAIN CONTENT ─── */
+.page{position:relative;z-index:10;padding:9rem 5rem 5rem}
+
+/* ─── PAGE HEADER ─── */
+.page-header{margin-bottom:4rem}
+.back-link{
+  display:inline-flex;align-items:center;gap:.6rem;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--dim);text-decoration:none;
+  transition:color .25s;margin-bottom:2rem;
+}
+.back-link:hover{color:var(--neon)}
+.back-link::before{content:'←';font-size:.85rem}
+
+.ph-kicker{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--neon);margin-bottom:1rem;
+  display:flex;align-items:center;gap:1rem;
+}
+.ph-kicker::before{content:'';width:48px;height:1px;background:var(--neon);box-shadow:0 0 8px var(--neon)}
+
+.ph-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(3.5rem,8vw,7rem);
+  line-height:.9;letter-spacing:.04em;
+  color:transparent;
+  background:linear-gradient(160deg,#fff 0%,rgba(255,255,255,.7) 30%,var(--neon) 65%,var(--neon3) 100%);
+  -webkit-background-clip:text;background-clip:text;
+  margin-bottom:1rem;
+}
+.ph-sub{
+  font-family:'Crimson Pro',serif;font-style:italic;
+  font-size:1.2rem;color:rgba(226,232,240,.45);
+  max-width:560px;line-height:1.7;
+}
+
+/* ─── FILTER BAR ─── */
+.filter-bar{
+  display:flex;gap:.6rem;flex-wrap:wrap;
+  margin-bottom:3rem;
+}
+.filter-btn{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:.4rem 1rem;border-radius:2px;
+  background:var(--glass);border:1px solid var(--glass-border);
+  color:var(--dim);cursor:none;
+  transition:all .25s;
+}
+.filter-btn:hover,.filter-btn.active{
+  background:rgba(0,255,231,.08);
+  border-color:rgba(0,255,231,.4);
+  color:var(--neon);
+  box-shadow:0 0 16px rgba(0,255,231,.1);
+}
+
+/* ─── FEATURED PROJECT ─── */
+.featured{
+  background:linear-gradient(135deg,rgba(0,255,231,.05),rgba(167,139,250,.05));
+  border:1px solid rgba(0,255,231,.2);
+  border-radius:16px;padding:2.75rem;
+  display:grid;grid-template-columns:1fr 1fr;gap:3rem;
+  align-items:center;margin-bottom:3rem;
+  position:relative;overflow:hidden;
+  transition:border-color .3s,box-shadow .3s;
+}
+.featured:hover{
+  border-color:rgba(0,255,231,.35);
+  box-shadow:0 0 60px rgba(0,255,231,.08);
+}
+.featured::before{
+  content:'FEATURED';
+  position:absolute;top:1.5rem;right:1.75rem;
+  font-family:'JetBrains Mono',monospace;font-size:.55rem;
+  letter-spacing:.2em;color:var(--gold);
+  background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);
+  padding:.2rem .65rem;border-radius:2px;
+}
+
+.feat-visual{
+  aspect-ratio:16/9;border-radius:10px;
+  background:linear-gradient(135deg,rgba(0,255,231,.08),rgba(167,139,250,.12));
+  border:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;justify-content:center;
+  font-size:4rem;
+  position:relative;overflow:hidden;
+}
+.feat-visual::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 60%,rgba(0,255,231,.05));
+}
+.feat-visual-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(0,255,231,.05) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(0,255,231,.05) 1px,transparent 1px);
+  background-size:30px 30px;
+}
+
+.feat-tag{
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  letter-spacing:.15em;text-transform:uppercase;
+  color:var(--neon);margin-bottom:.75rem;
+}
+.feat-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:2.2rem;letter-spacing:.05em;color:#fff;
+  margin-bottom:.75rem;line-height:1;
+}
+.feat-desc{
+  font-size:1rem;line-height:1.75;color:var(--dim);
+  margin-bottom:1.5rem;
+}
+.feat-stack{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.75rem}
+.stack-chip{
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  letter-spacing:.08em;padding:.22rem .65rem;border-radius:100px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+  color:rgba(226,232,240,.6);
+}
+.feat-links{display:flex;gap:.75rem}
+.proj-btn{
+  font-family:'JetBrains Mono',monospace;font-size:.62rem;
+  letter-spacing:.12em;text-transform:uppercase;
+  padding:.6rem 1.35rem;border-radius:3px;
+  text-decoration:none;transition:all .25s;display:inline-block;
+}
+.proj-btn-primary{
+  background:var(--neon);color:var(--void);font-weight:500;
+  box-shadow:0 0 20px rgba(0,255,231,.25);
+}
+.proj-btn-primary:hover{box-shadow:0 0 35px rgba(0,255,231,.5);transform:translateY(-2px)}
+.proj-btn-ghost{
+  border:1px solid rgba(0,255,231,.3);color:var(--neon);
+}
+.proj-btn-ghost:hover{background:rgba(0,255,231,.07);transform:translateY(-2px)}
+
+/* ─── PROJECT GRID ─── */
+.proj-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1.25rem;
+}
+
+.proj-card{
+  background:var(--glass);border:1px solid var(--glass-border);
+  backdrop-filter:blur(16px);border-radius:12px;
+  overflow:hidden;
+  transition:border-color .3s,box-shadow .3s,transform .3s;
+  display:flex;flex-direction:column;
+}
+.proj-card:hover{
+  border-color:rgba(0,255,231,.25);
+  box-shadow:0 16px 48px rgba(0,0,0,.5),0 0 0 1px rgba(0,255,231,.1),0 0 30px rgba(0,255,231,.06);
+  transform:translateY(-6px);
+}
+.proj-card[data-category].hidden{display:none}
+
+.proj-thumb{
+  aspect-ratio:16/9;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.5rem;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,rgba(0,255,231,.06),rgba(167,139,250,.08));
+  border-bottom:1px solid var(--glass-border);
+}
+.proj-thumb-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(0,255,231,.04) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(0,255,231,.04) 1px,transparent 1px);
+  background-size:24px 24px;
+}
+.proj-thumb-badge{
+  position:absolute;top:.75rem;right:.75rem;
+  font-family:'JetBrains Mono',monospace;font-size:.55rem;
+  letter-spacing:.12em;text-transform:uppercase;
+  padding:.2rem .6rem;border-radius:2px;
+}
+.badge-web{background:rgba(0,255,231,.12);color:var(--neon);border:1px solid rgba(0,255,231,.25)}
+.badge-ads{background:rgba(245,158,11,.12);color:var(--gold);border:1px solid rgba(245,158,11,.25)}
+.badge-erp{background:rgba(167,139,250,.12);color:var(--neon3);border:1px solid rgba(167,139,250,.25)}
+.badge-data{background:rgba(255,107,53,.12);color:var(--neon2);border:1px solid rgba(255,107,53,.25)}
+
+.proj-body{padding:1.5rem;flex:1;display:flex;flex-direction:column}
+.proj-cat{
+  font-family:'JetBrains Mono',monospace;font-size:.58rem;
+  letter-spacing:.15em;text-transform:uppercase;
+  color:var(--neon);margin-bottom:.5rem;
+}
+.proj-name{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1.25rem;letter-spacing:.05em;color:#fff;
+  margin-bottom:.6rem;line-height:1.1;
+}
+.proj-desc{
+  font-size:.9rem;line-height:1.7;color:var(--dim);
+  flex:1;margin-bottom:1.25rem;
+}
+.proj-stack{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1.25rem}
+.proj-stack span{
+  font-family:'JetBrains Mono',monospace;font-size:.58rem;
+  padding:.2rem .55rem;border-radius:100px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);
+  color:rgba(226,232,240,.5);
+}
+.proj-footer{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-top:1rem;border-top:1px solid rgba(255,255,255,.05);
+}
+.proj-status{
+  font-family:'JetBrains Mono',monospace;font-size:.58rem;
+  letter-spacing:.1em;text-transform:uppercase;
+  display:flex;align-items:center;gap:.4rem;
+}
+.status-dot{width:6px;height:6px;border-radius:50%}
+.dot-live{background:var(--neon);box-shadow:0 0 8px var(--neon);animation:pulse 2s infinite}
+.dot-demo{background:var(--gold);box-shadow:0 0 8px var(--gold)}
+.dot-wip{background:var(--neon3);box-shadow:0 0 8px var(--neon3);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.proj-link{
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  letter-spacing:.1em;text-transform:uppercase;
+  text-decoration:none;color:var(--neon);
+  display:flex;align-items:center;gap:.35rem;
+  transition:gap .2s;
+}
+.proj-link:hover{gap:.65rem}
+.proj-link::after{content:'→'}
+
+/* ─── STATS BAR ─── */
+.stats-bar{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:1px;background:var(--glass-border);
+  border:1px solid var(--glass-border);border-radius:10px;
+  overflow:hidden;margin-top:3rem;
+}
+.stat-seg{
+  background:var(--glass);padding:1.5rem;text-align:center;
+  backdrop-filter:blur(12px);transition:background .3s;
+}
+.stat-seg:hover{background:rgba(0,255,231,.05)}
+.stat-n{
+  font-family:'Bebas Neue',sans-serif;font-size:2.5rem;
+  color:var(--neon);text-shadow:0 0 20px rgba(0,255,231,.4);line-height:1;
+}
+.stat-l{
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-top:.3rem;
+}
+
+/* ─── REVEAL ─── */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.rv.on{opacity:1;transform:none}
+
+@media(max-width:768px){
+  nav{padding:1rem 1.5rem}
+  .nav-ul{display:none}
+  .page{padding:7rem 1.5rem 4rem}
+  .featured{grid-template-columns:1fr}
+  .proj-grid{grid-template-columns:1fr}
+  .stats-bar{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur2"></div>
+<canvas id="c"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">ABR</a>
+  <ul class="nav-ul">
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="index.html#experience">Work</a></li>
+    <li><a href="index.html#skills">Skills</a></li>
+    <li><a href="index.html#education">Education</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+    <li><a href="projects.html" class="nav-active nav-cta">Projects</a></li>
+  </ul>
+</nav>
+
+<div class="page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header rv">
+    <a href="index.html" class="back-link">Back to Portfolio</a>
+    <div class="ph-kicker">// My Work</div>
+    <h1 class="ph-title">Projects &<br>Case Studies</h1>
+    <p class="ph-sub">A curated collection of web development, digital advertising, ERP systems, and analytics projects — built across 6+ years of professional experience.</p>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar rv">
+    <button class="filter-btn active" data-filter="all">All Projects</button>
+    <button class="filter-btn" data-filter="web">Web Dev</button>
+    <button class="filter-btn" data-filter="ads">Google Ads</button>
+    <button class="filter-btn" data-filter="erp">ERP Systems</button>
+    <button class="filter-btn" data-filter="data">Analytics</button>
+  </div>
+
+  <!-- FEATURED PROJECT -->
+  <div class="featured rv" data-category="ads">
+    <div class="feat-visual">
+      <div class="feat-visual-grid"></div>
+      📊
+    </div>
+    <div>
+      <div class="feat-tag">// Featured Project · Google Ads</div>
+      <div class="feat-title">Enterprise Conversion Tracking System</div>
+      <p class="feat-desc">End-to-end Google Ads conversion tracking implementation for a large enterprise client — covering online and offline conversions, CRM data import, and enhanced conversions via GTM. Resulted in 40%+ improvement in attribution accuracy.</p>
+      <div class="feat-stack">
+        <span class="stack-chip">Google Tag Manager</span>
+        <span class="stack-chip">Google Ads</span>
+        <span class="stack-chip">GA4</span>
+        <span class="stack-chip">JavaScript</span>
+        <span class="stack-chip">CRM API</span>
+        <span class="stack-chip">DataLayer</span>
+      </div>
+      <div class="feat-links">
+        <a href="#" class="proj-btn proj-btn-primary">View Case Study</a>
+        <a href="#" class="proj-btn proj-btn-ghost">Live Demo</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECT GRID -->
+  <div class="proj-grid">
+
+    <!-- 1 -->
+    <div class="proj-card rv" data-category="erp">
+      <div class="proj-thumb">
+        <div class="proj-thumb-grid"></div>
+        🏢
+        <span class="proj-thumb-badge badge-erp">ERP</span>
+      </div>
+      <div class="proj-body">
+        <div class="proj-cat">// ERP Systems</div>
+        <div class="proj-name">GST-API ERP Integration</div>
+        <p class="proj-desc">Automated India's GST tax compliance by integrating the GSTN API directly into the ERP system — eliminating manual data entry and reducing filing errors across enterprise clients.</p>
+        <div class="proj-stack">
+          <span>PHP</span><span>REST API</span><span>SQL</span><span>GSTN API</span><span>ERP</span>
+        </div>
+        <div class="proj-footer">
+          <div class="proj-status"><div class="status-dot dot-live"></div><span style="color:var(--neon)">Live</span></div>
+          <a href="#" class="proj-link">View Details</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="proj-card rv" data-category="ads">
+      <div class="proj-thumb">
+        <div class="proj-thumb-grid"></div>
+        🎯
+        <span class="proj-thumb-badge badge-ads">Ads</span>
+      </div>
+      <div class="proj-body">
+        <div class="proj-cat">// Google Ads</div>
+        <div class="proj-name">Lead Gen Campaign Dashboard</div>
+        <p class="proj-desc">Built a centralised campaign performance dashboard tracking lead quality, cost-per-lead, and conversion rates across multiple Google Ads accounts — powering data-driven budget decisions.</p>
+        <div class="proj-stack">
+          <span>Google Ads API</span><span>JavaScript</span><span>GA4</span><span>GTM</span>
+        </div>
+        <div class="proj-footer">
+          <div class="proj-status"><div class="status-dot dot-live"></div><span style="color:var(--neon)">Live</span></div>
+          <a href="#" class="proj-link">View Details</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="proj-card rv" data-category="web">
+      <div class="proj-thumb">
+        <div class="proj-thumb-grid"></div>
+        🌐
+        <span class="proj-thumb-badge badge-web">Web</span>
+      </div>
+      <div class="proj-body">
+        <div class="proj-cat">// Web Development</div>
+        <div class="proj-name">ERP Client Portal</div>
+        <p class="proj-desc">Designed and developed a full-stack client-facing web portal for ERP users — featuring role-based access control, real-time data dashboards, and report generation modules.</p>
+        <div class="proj-stack">
+          <span>PHP</span><span>JavaScript</span><span>MySQL</span><span>Bootstrap</span><span>HTML/CSS</span>
+        </div>
+        <div class="proj-footer">
+          <div class="proj-status"><div class="status-dot dot-demo"></div><span style="color:var(--gold)">Demo</span></div>
+          <a href="#" class="proj-link">View Details</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="proj-card rv" data-category="data">
+      <div class="proj-thumb">
+        <div class="proj-thumb-grid"></div>
+        📈
+        <span class="proj-thumb-badge badge-data">Analytics</span>
+      </div>
+      <div class="proj-body">
+        <div class="proj-cat">// Analytics & Data</div>
+        <div class="proj-name">GA4 Migration & Audit</div>
+        <p class="proj-desc">Migrated legacy Universal Analytics implementations to GA4 — auditing all existing tags, rebuilding event schemas, and setting up custom dimensions and conversion events for accurate reporting.</p>
+        <div class="proj-stack">
+          <span>GA4</span><span>GTM</span><span>BigQuery</span><span>JavaScript</span>
+        </div>
+        <div class="proj-footer">
+          <div class="proj-status"><div class="status-dot dot-live"></div><span style="color:var(--neon)">Live</span></div>
+          <a href="#" class="proj-link">View Details</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="proj-card rv" data-category="ads">
+      <div class="proj-thumb">
+        <div class="proj-thumb-grid"></div>
+        🔗
+        <span class="proj-thumb-badge badge-ads">Ads</span>
+      </div>
+      <div class="proj-body">
+        <div class="proj-cat">// Google Ads</div>
+        <div class="proj-name">CRM to Google Ads Integration</div>
+        <p class="proj-desc">Connected CRM offline lead data to Google Ads via the Offline Conversion Import API — enabling smarter bidding based on actual sales data rather than just form fills.</p>
+        <div class="proj-stack">
+          <span>Google Ads API</span><span>CRM API</span><span>Python</span><span>REST</span>
+        </div>
+        <div class="proj-footer">
+          <div class="proj-status"><div class="status-dot dot-live"></div><span style="color:var(--neon)">Live</span></div>
+          <a href="#" class="proj-link">View Details</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="proj-card rv" data-category="web">
+      <div class="proj-thumb">
+        <div class="proj-thumb-grid"></div>
+        📱
+        <span class="proj-thumb-badge badge-web">Web</span>
+      </div>
+      <div class="proj-body">
+        <div class="proj-cat">// Web Development</div>
+        <div class="proj-name">Teleradiology Marketing Site</div>
+        <p class="proj-desc">Developed and managed the web presence for Teleradiology Solutions — including landing pages, social media integration, and a PHP-based content management system for the R&D team.</p>
+        <div class="proj-stack">
+          <span>PHP</span><span>HTML/CSS</span><span>JavaScript</span><span>WordPress</span>
+        </div>
+        <div class="proj-footer">
+          <div class="proj-status"><div class="status-dot dot-demo"></div><span style="color:var(--gold)">Demo</span></div>
+          <a href="#" class="proj-link">View Details</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="proj-card rv" data-category="data">
+      <div class="proj-thumb">
+        <div class="proj-thumb-grid"></div>
+        🏷️
+        <span class="proj-thumb-badge badge-data">Analytics</span>
+      </div>
+      <div class="proj-body">
+        <div class="proj-cat">// Tag Management</div>
+        <div class="proj-name">GTM DataLayer Architecture</div>
+        <p class="proj-desc">Designed a scalable GTM DataLayer schema for a multi-product e-commerce site — standardising event naming, capturing form submissions, scroll depth, video engagement, and custom micro-conversions.</p>
+        <div class="proj-stack">
+          <span>GTM</span><span>JavaScript</span><span>DataLayer</span><span>GA4</span>
+        </div>
+        <div class="proj-footer">
+          <div class="proj-status"><div class="status-dot dot-live"></div><span style="color:var(--neon)">Live</span></div>
+          <a href="#" class="proj-link">View Details</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="proj-card rv" data-category="erp">
+      <div class="proj-thumb">
+        <div class="proj-thumb-grid"></div>
+        ⚙️
+        <span class="proj-thumb-badge badge-erp">ERP</span>
+      </div>
+      <div class="proj-body">
+        <div class="proj-cat">// ERP Systems</div>
+        <div class="proj-name">Inventory & Billing Module</div>
+        <p class="proj-desc">Built a custom inventory management and automated billing module for a manufacturing client — integrating stock levels, purchase orders, vendor management, and invoice generation in one system.</p>
+        <div class="proj-stack">
+          <span>PHP</span><span>MySQL</span><span>JavaScript</span><span>Bootstrap</span>
+        </div>
+        <div class="proj-footer">
+          <div class="proj-status"><div class="status-dot dot-demo"></div><span style="color:var(--gold)">Demo</span></div>
+          <a href="#" class="proj-link">View Details</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9 -->
+    <div class="proj-card rv" data-category="web">
+      <div class="proj-thumb">
+        <div class="proj-thumb-grid"></div>
+        🚀
+        <span class="proj-thumb-badge badge-web">Web</span>
+      </div>
+      <div class="proj-body">
+        <div class="proj-cat">// Web Development</div>
+        <div class="proj-name">3D Portfolio Website</div>
+        <p class="proj-desc">This very portfolio — built with Three.js for immersive 3D background animations, glassmorphism UI, custom cursor, scroll-reveal effects, and EmailJS contact integration. Fully responsive.</p>
+        <div class="proj-stack">
+          <span>HTML/CSS</span><span>JavaScript</span><span>Three.js</span><span>EmailJS</span>
+        </div>
+        <div class="proj-footer">
+          <div class="proj-status"><div class="status-dot dot-live"></div><span style="color:var(--neon)">Live</span></div>
+          <a href="index.html" class="proj-link">View Site</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar rv">
+    <div class="stat-seg">
+      <div class="stat-n">9+</div>
+      <div class="stat-l">Projects Built</div>
+    </div>
+    <div class="stat-seg">
+      <div class="stat-n">6+</div>
+      <div class="stat-l">Years Experience</div>
+    </div>
+    <div class="stat-seg">
+      <div class="stat-n">3</div>
+      <div class="stat-l">Industries</div>
+    </div>
+    <div class="stat-seg">
+      <div class="stat-n">4</div>
+      <div class="stat-l">Certifications</div>
+    </div>
+  </div>
+
+</div><!-- end .page -->
+
+<footer style="position:relative;z-index:10;background:rgba(0,0,0,.4);border-top:1px solid rgba(255,255,255,.04);text-align:center;padding:2rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:#64748b;">
+  © 2024 <span style="color:var(--neon)">Abhishekappa B R</span> · All Systems Operational
+</footer>
+
+<script>
+// ── CURSOR ──
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cur.style.transform=`translate(${mx-4}px,${my-4}px)`;
+});
+(function loop(){
+  tx+=(mx-tx)*.14;ty+=(my-ty)*.14;
+  cur2.style.transform=`translate(${tx-14}px,${ty-14}px)`;
+  requestAnimationFrame(loop);
+})();
+document.querySelectorAll('a,button,.proj-card,.featured').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur2.style.width='44px';cur2.style.height='44px';cur2.style.borderColor='rgba(0,255,231,.7)'});
+  el.addEventListener('mouseleave',()=>{cur2.style.width='28px';cur2.style.height='28px';cur2.style.borderColor='rgba(0,255,231,.4)'});
+});
+
+// ── THREE.JS BACKGROUND ──
+(()=>{
+  const canvas=document.getElementById('c');
+  const R=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  R.setPixelRatio(Math.min(devicePixelRatio,2));
+  R.setSize(innerWidth,innerHeight);
+  const scene=new THREE.Scene();
+  const cam=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.1,1000);
+  cam.position.z=28;
+
+  const N=1400,pos=new Float32Array(N*3),col=new Float32Array(N*3);
+  for(let i=0;i<N;i++){
+    pos[i*3]=(Math.random()-.5)*160;pos[i*3+1]=(Math.random()-.5)*160;pos[i*3+2]=(Math.random()-.5)*100;
+    const r=Math.random();
+    if(r<.55){col[i*3]=0;col[i*3+1]=1;col[i*3+2]=.9;}
+    else if(r<.75){col[i*3]=.65;col[i*3+1]=.55;col[i*3+2]=.98;}
+    else{col[i*3]=1;col[i*3+1]=.42;col[i*3+2]=.21;}
+  }
+  const pg=new THREE.BufferGeometry();
+  pg.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  pg.setAttribute('color',new THREE.BufferAttribute(col,3));
+  const pts=new THREE.Points(pg,new THREE.PointsMaterial({size:.22,vertexColors:true,transparent:true,opacity:.65,sizeAttenuation:true}));
+  scene.add(pts);
+
+  const objs=[];
+  function wire(geo,x,y,z,c){
+    const m=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:c,wireframe:true,transparent:true,opacity:.08}));
+    m.position.set(x,y,z);
+    m.userData={rx:(Math.random()-.5)*.004,ry:(Math.random()-.5)*.004,fy:Math.random()*Math.PI*2,fs:.25+Math.random()*.3,fa:.4+Math.random()*.5};
+    scene.add(m);objs.push(m);
+  }
+  wire(new THREE.IcosahedronGeometry(4,1),-20,8,-14,0x00ffe7);
+  wire(new THREE.OctahedronGeometry(3,0),22,-6,-18,0x00ffe7);
+  wire(new THREE.TorusGeometry(4,1.2,8,20),0,14,-20,0xa78bfa);
+  wire(new THREE.IcosahedronGeometry(2.5,0),16,12,-8,0xff6b35);
+
+  let mouse={x:0,y:0};
+  document.addEventListener('mousemove',e=>{mouse.x=(e.clientX/innerWidth-.5)*2;mouse.y=(e.clientY/innerHeight-.5)*2});
+  window.addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();R.setSize(innerWidth,innerHeight)});
+
+  const clk=new THREE.Clock();
+  (function tick(){
+    requestAnimationFrame(tick);
+    const t=clk.getElapsedTime();
+    pts.rotation.y=t*.015;pts.rotation.x=t*.006;
+    cam.position.x+=(mouse.x*3-cam.position.x)*.02;
+    cam.position.y+=(-mouse.y*2-cam.position.y)*.02;
+    cam.lookAt(0,0,0);
+    objs.forEach(o=>{const d=o.userData;o.rotation.x+=d.rx;o.rotation.y+=d.ry;o.position.y+=Math.sin(t*d.fs+d.fy)*d.fa*.008});
+    R.render(scene,cam);
+  })();
+})();
+
+// ── FILTER ──
+const filterBtns=document.querySelectorAll('.filter-btn');
+const projCards=document.querySelectorAll('.proj-card[data-category]');
+const featCard=document.querySelector('.featured[data-category]');
+
+filterBtns.forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    filterBtns.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter=btn.dataset.filter;
+
+    // Featured card
+    if(filter==='all'||featCard.dataset.category===filter){
+      featCard.style.display='grid';
+    } else {
+      featCard.style.display='none';
+    }
+
+    // Grid cards
+    projCards.forEach(card=>{
+      if(filter==='all'||card.dataset.category===filter){
+        card.style.display='flex';
+        card.classList.remove('hidden');
+      } else {
+        card.style.display='none';
+        card.classList.add('hidden');
+      }
+    });
+  });
+});
+
+// ── SCROLL REVEAL ──
+const rv=document.querySelectorAll('.rv');
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){setTimeout(()=>e.target.classList.add('on'),i*80);obs.unobserve(e.target)}
+  });
+},{threshold:.08});
+rv.forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
